@@ -21,6 +21,9 @@ public class User {
     @Column(name = "PASSWORD", nullable = false, length = 255)
     private String passwordHash;
 
+    @Column(name = "MOTHER_MAIDEN_NAME", length = 100)
+    private String motherMaidenName;
+
     @Column(name = "FULL_NAME", nullable = false, length = 150)
     private String name;
 
@@ -50,6 +53,9 @@ public class User {
 
     public String getPasswordHash() { return passwordHash; }
     public void setPasswordHash(String passwordHash) { this.passwordHash = passwordHash; }
+
+    public String getMotherMaidenName() { return motherMaidenName; }
+    public void setMotherMaidenName(String motherMaidenName) { this.motherMaidenName = motherMaidenName; }
 
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }
