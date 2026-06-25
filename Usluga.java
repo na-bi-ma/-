@@ -24,6 +24,10 @@ public class Usluga {
     @Column(name = "ID_VRACH")
     private Long vrachId;
 
+    @Column(name = "CATEGORY_ID")
+    private Long categoryId;
+
+
     // Конструкторы
     public Usluga() {}
 
@@ -45,4 +49,7 @@ public class Usluga {
 
     public Long getVrachId() { return vrachId; }
     public void setVrachId(Long vrachId) { this.vrachId = vrachId; }
+
+    public Long getCategoryId() { return categoryId; }
+    public void setCategoryId(Long categoryId) { this.categoryId = categoryId; }
 }
