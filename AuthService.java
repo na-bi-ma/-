@@ -1,5 +1,5 @@
 package org.example.service;
-
+import org.example.dto.ResetPasswordRequest;
 import org.example.dto.LoginRequest;
 import org.example.dto.RegisterRequest;
 import org.example.entity.User;
@@ -34,6 +34,7 @@ public class AuthService {
         user.setEmail(request.getEmail());
         user.setPhone(request.getPhone());
         user.setPasswordHash(passwordEncoder.encode(request.getPassword()));
+        user.setMotherMaidenName(request.getMotherMaidenName());
         user.setName(request.getName());
 
         return userRepository.save(user);
@@ -56,5 +57,15 @@ public class AuthService {
     public User getCurrentUser(Long userId) {
         return userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("Пользователь не найден"));
+    }
+    //  Восстановление пароля
+    public void resetPassword(ResetPasswordRequest request) {
+        User user = userRepository.findByEmailAndMotherMaidenName(
+                request.getEmail(),
+                request.getMotherMaidenName()
+        ).orElseThrow(() -> new RuntimeException("Неверный email или девичья фамилия матери"));
+
+        user.setPasswordHash(passwordEncoder.encode(request.getNewPassword()));
+        userRepository.save(user);
     }
 }

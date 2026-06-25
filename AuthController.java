@@ -1,5 +1,5 @@
 package org.example.controller;
-
+import org.example.dto.ResetPasswordRequest;
 import org.example.dto.LoginRequest;
 import org.example.dto.RegisterRequest;
 import org.example.entity.User;
@@ -50,6 +50,17 @@ public class AuthController {
         }
     }
 
+    // Восстановление пароля
+    @PostMapping("/reset-password")
+    public ResponseEntity<?> resetPassword(@RequestBody ResetPasswordRequest request) {
+        try {
+            authService.resetPassword(request);
+            return ResponseEntity.ok(Map.of("message", "Пароль успешно изменён"));
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
+    }
+
     // Информация о текущем пользователе
     @GetMapping("/me")
     public ResponseEntity<?> getCurrentUser(@RequestHeader("Authorization") String authHeader) {
@@ -73,6 +84,19 @@ public class AuthController {
             ));
         } catch (Exception e) {
             return ResponseEntity.status(401).body(Map.of("error", "Ошибка авторизации"));
+        }
+    }
+
+    @GetMapping("/user/{id}")
+    public ResponseEntity<?> getUserById(@PathVariable("id") Long id) {
+        try {
+            User user = authService.getCurrentUser(id);
+            return ResponseEntity.ok(Map.of(
+                    "id", user.getId(),
+                    "name", user.getName()
+            ));
+        } catch (Exception e) {
+            return ResponseEntity.status(404).body(Map.of("error", "Пользователь не найден"));
         }
     }
 }

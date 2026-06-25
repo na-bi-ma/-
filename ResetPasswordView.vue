@@ -1,85 +1,88 @@
 <template>
   <div class="auth-container">
-    <h2>Вход в личный кабинет</h2>
+    <h2>Восстановление пароля</h2>
 
-    <form @submit.prevent="handleLogin">
+    <form @submit.prevent="handleReset">
       <div class="form-group">
-        <label for="login">Логин (email или телефон)</label>
+        <label for="email">Email</label>
         <input
-          type="text"
-          id="login"
-          v-model="form.login"
+          type="email"
+          id="email"
+          v-model="form.email"
           required
-          placeholder="example@mail.com или +375000000000"
+          placeholder="example@mail.com"
         >
       </div>
 
       <div class="form-group">
-        <label for="password">Пароль</label>
+        <label for="motherMaidenName">Девичья фамилия матери</label>
+        <input
+          type="text"
+          id="motherMaidenName"
+          v-model="form.motherMaidenName"
+          required
+          placeholder="Иванова"
+        >
+      </div>
+
+      <div class="form-group">
+        <label for="newPassword">Новый пароль</label>
         <input
           type="password"
-          id="password"
-          v-model="form.password"
+          id="newPassword"
+          v-model="form.newPassword"
           required
-          placeholder="Введите пароль"
+          placeholder="Минимум 6 символов и 1 цифра"
         >
       </div>
 
       <button type="submit" :disabled="loading">
-        {{ loading ? 'Вход...' : 'Войти' }}
+        {{ loading ? 'Восстановление...' : 'Восстановить пароль' }}
       </button>
 
       <div v-if="error" class="error">{{ error }}</div>
+      <div v-if="success" class="success">{{ success }}</div>
     </form>
 
-    <p class="link" style="margin-bottom: 0;">
-      Забыли пароль? <router-link to="/auth/reset-password">Восстановить</router-link>
-    </p>
-
-    <p class="link" style="margin-top: 5px;">
-      Нет аккаунта? <router-link to="/auth/register">Зарегистрироваться</router-link>
+    <p class="link">
+      <router-link to="/auth/login">Вернуться ко входу</router-link>
     </p>
   </div>
 </template>
 
 <script>
 import { ref } from 'vue';
-import { useRouter } from 'vue-router';
-import { login } from '@/services/api';
+import { resetPassword } from '@/services/api';
 
 export default {
-  name: 'LoginView',
+  name: 'ResetPasswordView',
   setup() {
-    const router = useRouter();
     const loading = ref(false);
     const error = ref('');
+    const success = ref('');
 
     const form = ref({
-      login: '',
-      password: ''
+      email: '',
+      motherMaidenName: '',
+      newPassword: ''
     });
 
-    const handleLogin = async () => {
+    const handleReset = async () => {
       loading.value = true;
       error.value = '';
+      success.value = '';
 
       try {
-        const response = await login(form.value);
-        localStorage.setItem('token', response.token);
-        router.push('/profile');
+        await resetPassword(form.value);
+        success.value = 'Пароль успешно изменён! Можете войти.';
       } catch (err) {
-        error.value = err.message || 'Ошибка при входе';
+        error.value = err.message || 'Ошибка при восстановлении пароля';
       } finally {
         loading.value = false;
       }
     };
 
-    return {
-      form,
-      loading,
-      error,
-      handleLogin
-    };
+    return { form, loading, error, success, handleReset };
   }
 };
 </script>
@@ -116,12 +119,12 @@ input {
   box-sizing: border-box;
 }
 
-input:focus { outline: none; border-color: #2196F3; box-shadow: 0 0 6px rgba(33, 150, 243, 0.3); }
+input:focus { outline: none; border-color: #ff9800; box-shadow: 0 0 6px rgba(255, 152, 0, 0.3); }
 
 button {
   width: 100%;
   padding: 14px;
-  background-color: #2196F3;
+  background-color: #ff9800;
   color: white;
   border: none;
   border-radius: 6px;
@@ -129,22 +132,18 @@ button {
   cursor: pointer;
 }
 
-button:hover:not(:disabled) { background-color: #1976D2; }
+button:hover:not(:disabled) { background-color: #f57c00; }
 button:disabled { background-color: #bbb; cursor: not-allowed; }
 
 .error { margin-top: 16px; padding: 12px; background-color: #ffebee; color: #c62828; border-radius: 6px; border-left: 4px solid #c62828; font-size: 15px; }
+.success { margin-top: 16px; padding: 12px; background-color: #e8f5e8; color: #2e7d32; border-radius: 6px; border-left: 4px solid #2e7d32; font-size: 15px; }
 
 .link { text-align: center; margin-top: 22px; color: #777; font-size: 15px; }
-.link a { color: #2196F3; text-decoration: none; }
+.link a { color: #ff9800; text-decoration: none; }
 .link a:hover { text-decoration: underline; }
 
-/* Планшеты и телефоны */
 @media (max-width: 768px) {
-  .auth-container {
-    width: 90%;
-    padding: 28px 22px;
-    border-radius: 10px;
-  }
+  .auth-container { width: 90%; padding: 28px 22px; border-radius: 10px; }
   h2 { font-size: 22px; margin-bottom: 22px; }
   input { padding: 12px; font-size: 15px; }
   button { padding: 12px; font-size: 16px; }
@@ -152,7 +151,6 @@ button:disabled { background-color: #bbb; cursor: not-allowed; }
   .link { font-size: 14px; }
 }
 
-/* Маленькие телефоны */
 @media (max-width: 400px) {
   .auth-container { padding: 20px 16px; }
   h2 { font-size: 20px; }
