@@ -1,0 +1,30 @@
+package org.example.service;
+
+import org.example.entity.Appointment;
+import org.example.repository.AppointmentRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import java.util.List;
+
+@Service
+public class AppointmentService {
+
+    @Autowired
+    private AppointmentRepository appointmentRepository;
+
+    public Appointment createAppointment(Appointment appointment) {
+        return appointmentRepository.save(appointment);
+    }
+
+    public List<Appointment> getUserAppointments(Long userId) {
+        return appointmentRepository.findByUserIdOrderByAppointmentDateDesc(userId);
+    }
+
+    public List<Appointment> getVrachAppointments(Long vrachId, java.time.LocalDate date) {
+        return appointmentRepository.findByVrachIdAndAppointmentDate(vrachId, date);
+    }
+
+    public void deleteAppointment(Long id) {
+        appointmentRepository.deleteById(id);
+    }
+}
